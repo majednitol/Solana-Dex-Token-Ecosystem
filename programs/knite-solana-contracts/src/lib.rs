@@ -9,7 +9,7 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("9dsieqXBVvCeJkogLArvLPE2LXU1zCNe97DFBwq1z2nR");
+declare_id!("EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj");
 
 #[program]
 pub mod knite_solana_contracts {
