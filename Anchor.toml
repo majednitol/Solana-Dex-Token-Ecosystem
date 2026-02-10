@@ -8,7 +8,6 @@ skip-lint = false
 
 [programs.localnet]
 knite_solana_contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
-common-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
 dex-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
 liquidity-pool-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
 referral-program-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
