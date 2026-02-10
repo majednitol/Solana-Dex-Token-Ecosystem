@@ -6,7 +6,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "knite_solana_contracts"
+name = "liquidity_pool_contracts"
 
 [features]
 default = []

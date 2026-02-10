@@ -5,9 +5,18 @@ package_manager = "yarn"
 resolution = true
 skip-lint = false
 
+
 [programs.localnet]
 knite_solana_contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
-
+common-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+dex-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+liquidity-pool-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+referral-program-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+token-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+treasury-multisig-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+[package]
+name = "solana_dex_token_ecosystem"
+version = "0.1.0"
 [registry]
 url = "https://api.apr.dev"
 
