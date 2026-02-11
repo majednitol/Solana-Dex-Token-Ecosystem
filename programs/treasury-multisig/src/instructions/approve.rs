@@ -18,21 +18,27 @@ pub fn handler(ctx: Context<Approve>) -> Result<()> {
         .position(|k| *k == owner_key)
         .ok_or_else(|| error!(MultisigError::Unauthorized))?;
 
+    if owner_index >= 8 {
+        return err!(MultisigError::Overflow);
+    }
+
     let bit = 1u8
         .checked_shl(owner_index as u32)
         .ok_or_else(|| error!(MultisigError::Overflow))?;
 
-    // ✅ prevent double-approve
     if (proposal.approvals_bitmap & bit) != 0 {
         return err!(MultisigError::AlreadyApproved);
     }
 
     proposal.approvals_bitmap |= bit;
 
+    let approvals = proposal.approvals_bitmap.count_ones() as u8;
+
     emit!(ProposalApproved {
         multisig: multisig.key(),
         proposal: proposal.key(),
         owner: owner_key,
+        approvals,
     });
 
     Ok(())

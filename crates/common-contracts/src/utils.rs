@@ -1,8 +1,5 @@
-// programs/common/src/utils.rs
-use crate::{constants::*, errors::CommonError};
 use anchor_lang::prelude::*;
-
-
+use crate::{constants::is_zero_pubkey, errors::CommonError};
 
 #[inline(always)]
 pub fn require_true(cond: bool, err: CommonError) -> Result<()> {
@@ -20,6 +17,12 @@ pub fn require_nonzero_pubkey(pk: &Pubkey) -> Result<()> {
 }
 
 #[inline(always)]
+pub fn require_pubkey_eq(a: &Pubkey, b: &Pubkey, err: CommonError) -> Result<()> {
+    require_true(a == b, err)
+}
+
+/// PDA helper (program_id + seeds)
+#[inline(always)]
 pub fn derive_pda(program_id: &Pubkey, seeds: &[&[u8]]) -> (Pubkey, u8) {
     Pubkey::find_program_address(seeds, program_id)
 }
@@ -29,14 +32,14 @@ pub fn require_owned_by(acc_owner: &Pubkey, expected_owner: &Pubkey) -> Result<(
     require_true(acc_owner == expected_owner, CommonError::InvalidProgramId)
 }
 
-#[inline(always)]
-pub fn require_pubkey_eq(a: &Pubkey, b: &Pubkey, err: CommonError) -> Result<()> {
-    require_true(a == b, err)
-}
-
+/// whitelist check helper (simple slice)
 #[inline(always)]
 pub fn require_whitelisted(mint: &Pubkey, whitelist: &[Pubkey]) -> Result<()> {
-    if whitelist.iter().any(|m| m == mint) { Ok(()) } else { Err(error!(CommonError::TokenNotAllowed)) }
+    if whitelist.iter().any(|m| m == mint) {
+        Ok(())
+    } else {
+        Err(error!(CommonError::TokenNotAllowed))
+    }
 }
 
 #[inline(always)]
@@ -44,7 +47,12 @@ pub fn now_ts() -> Result<i64> {
     Ok(Clock::get()?.unix_timestamp)
 }
 
-// --- SPL helpers (ONLY compiled when feature "spl" enabled) ---
+#[inline(always)]
+pub fn now_slot() -> Result<u64> {
+    Ok(Clock::get()?.slot)
+}
+
+/// --- SPL helpers (ONLY compiled when feature "spl" enabled) ---
 #[cfg(feature = "spl")]
 pub mod spl {
     use super::*;

@@ -1,8 +1,7 @@
-// programs/common/src/errors.rs
 use anchor_lang::prelude::*;
 
 /// Shared error codes across all programs.
-/// Keep these stable. Auditors will reference them.
+/// Keep these stable — auditors + backend indexing rely on them.
 #[error_code]
 pub enum CommonError {
     #[msg("Unauthorized")]
@@ -16,6 +15,9 @@ pub enum CommonError {
 
     #[msg("Math overflow/underflow")]
     MathOverflow,
+
+    #[msg("Division by zero")]
+    DivisionByZero,
 
     #[msg("Slippage exceeded")]
     SlippageExceeded,

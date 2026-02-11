@@ -7,12 +7,12 @@ skip-lint = false
 
 
 [programs.localnet]
-knite_solana_contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
-dex-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
-liquidity-pool-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
-referral-program-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
-token-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
-treasury-multisig-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLk"
+knite_solana_contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLh"
+dex-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
+liquidity-pool-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
+referral-program-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
+token-core-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
+treasury-multisig-contracts = "EKxbxCKrMseRkptPv1EVUgTv1uBW4WuSbvtrm6miwYLj"
 [package]
 name = "solana_dex_token_ecosystem"
 version = "0.1.0"
@@ -24,6 +24,6 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 \"tests/**/*.ts\""
+test = "yarn mocha -t 1000000 tests/**/*.test.js"
 
 [hooks]

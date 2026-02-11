@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::{Initialize, ProposalCreated};
+use crate::{Initialize, MultisigInitialized};
 use crate::errors::MultisigError;
 use crate::state::MAX_OWNERS;
 
@@ -8,6 +8,7 @@ pub fn handler(ctx: Context<Initialize>, owners: Vec<Pubkey>, threshold: u8) -> 
         return err!(MultisigError::InvalidOwners);
     }
 
+    // no duplicates
     for i in 0..owners.len() {
         for j in (i + 1)..owners.len() {
             if owners[i] == owners[j] {
@@ -16,7 +17,7 @@ pub fn handler(ctx: Context<Initialize>, owners: Vec<Pubkey>, threshold: u8) -> 
         }
     }
 
-    if threshold == 0 || threshold as usize > owners.len() {
+    if threshold == 0 || (threshold as usize) > owners.len() {
         return err!(MultisigError::InvalidThreshold);
     }
 
@@ -26,6 +27,12 @@ pub fn handler(ctx: Context<Initialize>, owners: Vec<Pubkey>, threshold: u8) -> 
     multisig.owners = owners;
     multisig.nonce = 0;
 
-    // no event needed here (optional)
+    emit!(MultisigInitialized {
+        multisig: multisig.key(),
+        threshold: multisig.threshold,
+        owners_len: multisig.owners.len() as u8,
+        nonce: multisig.nonce,
+    });
+
     Ok(())
 }

@@ -25,22 +25,31 @@ pub fn handler(
         return err!(MultisigError::InvalidNonce);
     }
 
-    // only multisig PDA is allowed to be signer
+    // signer-meta rule: only multisig PDA may be signer
     for m in metas.iter() {
         if m.is_signer && m.pubkey != multisig_key {
             return err!(MultisigError::InvalidSignerMeta);
         }
     }
 
-    // mutable borrow after immutable reads
+    // proposer must be an owner
     let multisig = &mut ctx.accounts.multisig;
-
     let owner_index = multisig
         .owners
         .iter()
         .position(|k| *k == proposer_key)
         .ok_or_else(|| error!(MultisigError::Unauthorized))?;
 
+    // approvals bitmap must fit within u8
+    if owner_index >= 8 {
+        return err!(MultisigError::Overflow);
+    }
+
+    let bit = 1u8
+        .checked_shl(owner_index as u32)
+        .ok_or_else(|| error!(MultisigError::Overflow))?;
+
+    // write proposal
     let proposal = &mut ctx.accounts.proposal;
     proposal.multisig = multisig_key;
     proposal.proposer = proposer_key;
@@ -50,12 +59,10 @@ pub fn handler(
     proposal.executed = false;
     proposal.nonce = current_nonce;
 
-    proposal.approvals_bitmap = 0u8;
-    let bit = 1u8
-        .checked_shl(owner_index as u32)
-        .ok_or_else(|| error!(MultisigError::Overflow))?;
-    proposal.approvals_bitmap |= bit;
+    // auto-approve proposer
+    proposal.approvals_bitmap = bit;
 
+   
     multisig.nonce = multisig
         .nonce
         .checked_add(1)

@@ -10,11 +10,22 @@ pub mod errors;
 pub mod instructions;
 pub mod state;
 
-use state::{AccountMetaLite, Multisig, Proposal, MAX_OWNERS};
+pub use errors::*;
+pub use state::*;
 
 pub const SEED_PROPOSAL: &[u8] = b"proposal";
 
-declare_id!("Trsy111111111111111111111111111111111111111");
+declare_id!("MXCWnwznqDHe9BXnYbxTV5BVu1JoDJnSfcupqnbCdaT");
+
+
+
+#[event]
+pub struct MultisigInitialized {
+    pub multisig: Pubkey,
+    pub threshold: u8,
+    pub owners_len: u8,
+    pub nonce: u64,
+}
 
 #[event]
 pub struct ProposalCreated {
@@ -30,6 +41,7 @@ pub struct ProposalApproved {
     pub multisig: Pubkey,
     pub proposal: Pubkey,
     pub owner: Pubkey,
+    pub approvals: u8,
 }
 
 #[event]
@@ -40,16 +52,19 @@ pub struct ProposalExecuted {
     pub target_program: Pubkey,
 }
 
+
+
 #[derive(Accounts)]
 #[instruction(owners: Vec<Pubkey>, threshold: u8)]
 pub struct Initialize<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    /// Treasury PDA / Multisig state
     #[account(
         init,
         payer = payer,
-        space = Multisig::space(MAX_OWNERS),
+        space = Multisig::space(),
         seeds = [SEED_TREASURY],
         bump
     )]
@@ -71,11 +86,12 @@ pub struct Propose<'info> {
     )]
     pub multisig: Account<'info, Multisig>,
 
+    /// Proposal PDA: (proposal, multisig, nonce)
     #[account(
         init,
         payer = proposer,
         space = Proposal::space(metas.len(), ix_data.len()),
-        seeds = [SEED_PROPOSAL, multisig.key().as_ref(), nonce.to_le_bytes().as_ref()],
+        seeds = [SEED_PROPOSAL, multisig.key().as_ref(), &nonce.to_le_bytes()],
         bump
     )]
     pub proposal: Account<'info, Proposal>,
@@ -110,11 +126,25 @@ pub struct Execute<'info> {
     #[account(
         mut,
         has_one = multisig,
-        // ✅ close proposal on success, refund rent to caller (or change to proposer if you prefer)
         close = caller
     )]
     pub proposal: Account<'info, Proposal>,
 }
+
+#[derive(Accounts)]
+pub struct Dummy<'info> {
+    /// CHECK: This is the program executable account, required only so that CPI can include it.
+    /// need to verify key == crate::ID and executable == true in the handler.
+    pub this_program: UncheckedAccount<'info>,
+
+    /// Multisig PDA state. Must be the SEED_TREASURY PDA.
+    #[account(
+        seeds = [SEED_TREASURY],
+        bump = multisig.bump
+    )]
+    pub multisig: Account<'info, Multisig>,
+}
+
 
 #[program]
 pub mod treasury_multisig_contracts {
@@ -141,4 +171,21 @@ pub mod treasury_multisig_contracts {
     pub fn execute(ctx: Context<Execute>) -> Result<()> {
         instructions::execute::handler(ctx)
     }
+
+pub fn dummy(ctx: Context<Dummy>) -> Result<()> {
+    // Program account must be correct + executable
+    if ctx.accounts.this_program.key() != crate::ID || !ctx.accounts.this_program.executable {
+        return err!(MultisigError::AccountListMismatch);
+    }
+
+    // In CPI execute(), multisig PDA should be marked signer via invoke_signed
+    if !ctx.accounts.multisig.to_account_info().is_signer {
+        return err!(MultisigError::InvalidSignerMeta);
+    }
+
+    msg!("Dummy CPI executed");
+    Ok(())
+}
+
+
 }

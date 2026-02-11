@@ -29,6 +29,9 @@ pub enum MultisigError {
     #[msg("Account list mismatch")]
     AccountListMismatch,
 
+    #[msg("Account meta flags mismatch (signer/writable)")]
+    AccountMetaFlagsMismatch,
+
     #[msg("Signer meta not allowed (only multisig PDA may be signer)")]
     InvalidSignerMeta,
 

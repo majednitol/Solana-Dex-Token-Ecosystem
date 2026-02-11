@@ -1,7 +1,7 @@
 [package]
 name = "referral-program-contracts"
 version = "0.1.0"
-description = "Created with Anchor"
+description = "Referral proof program for Knite private DEX"
 edition = "2021"
 
 [lib]
@@ -23,6 +23,6 @@ custom-panic = []
 [dependencies]
 anchor-lang = "0.32.1"
 anchor-spl  = "0.32.1"
-
+common-contracts = { path = "../../crates/common-contracts" }
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
