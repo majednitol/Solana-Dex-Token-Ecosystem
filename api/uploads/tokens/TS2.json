@@ -1,0 +1,17 @@
+{
+  "name": "Test2",
+  "symbol": "TS2",
+  "description": "Test2 (TS2) token.",
+  "image": "",
+  "external_url": "https://cryptoniteswap.com",
+  "attributes": [
+    {
+      "trait_type": "decimals",
+      "value": "5"
+    },
+    {
+      "trait_type": "transferFeeBps",
+      "value": "5"
+    }
+  ]
+}

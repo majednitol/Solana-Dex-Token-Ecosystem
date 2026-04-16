@@ -1,0 +1,15 @@
+node_modules
+dist
+attached_assets/
+*.js.map
+*.d.ts.map
+frontend/.env
+api/.env
+keys/
+.env
+.local/
+*.log
+.replit
+replit.nix
+contract/target/
+contract/.anchor/wallet-keypair.json

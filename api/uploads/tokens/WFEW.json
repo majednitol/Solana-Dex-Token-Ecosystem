@@ -1,0 +1,17 @@
+{
+  "name": "scfvdsvcds",
+  "symbol": "WFEW",
+  "description": "scfvdsvcds (WFEW) token.",
+  "image": "/uploads/tokens/WFEW.png",
+  "external_url": "https://cryptoniteswap.com",
+  "attributes": [
+    {
+      "trait_type": "decimals",
+      "value": "5"
+    },
+    {
+      "trait_type": "transferFeeBps",
+      "value": "5"
+    }
+  ]
+}

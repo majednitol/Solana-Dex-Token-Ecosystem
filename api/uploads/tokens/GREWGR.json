@@ -1,0 +1,17 @@
+{
+  "name": "rgreg",
+  "symbol": "GREWGR",
+  "description": "rgreg (GREWGR) token.",
+  "image": "https://f3cc2305-8d70-4f7c-b9ac-584df548b41f-00-11su7i3rx71rs.riker.replit.dev/uploads/tokens/GREWGR.jpeg",
+  "external_url": "https://cryptoniteswap.com",
+  "attributes": [
+    {
+      "trait_type": "decimals",
+      "value": "5"
+    },
+    {
+      "trait_type": "transferFeeBps",
+      "value": "5"
+    }
+  ]
+}

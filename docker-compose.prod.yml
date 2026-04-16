@@ -1,0 +1,10 @@
+services:
+nginx:
+  ports:
+    - "443:443"
+  volumes:
+    # Injects the domain-specific SSL rules, wiping out the Dev rules globally across the container
+    - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+
+    # Mounts the existing certificates from the deployment server into the unencrypted container
+    - /etc/letsencrypt:/etc/letsencrypt:ro

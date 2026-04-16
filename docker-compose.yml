@@ -1,0 +1,160 @@
+version: "3.9"
+
+services:
+  # ── Redis ─────────────────────────────────────────────
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # ── Backend instances ─────────────────────────────────
+  backend1:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - PORT=8080
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  backend2:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - PORT=8080
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  backend3:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - PORT=8080
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  # ── Workers ──────────────────────────────────────────
+  fee-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: ["node", "worker/feeCollector.js"]
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  price-watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: ["node", "worker/priceWatcher.js"]
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  token-fee-withdraw:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: ["node", "worker/tokenFeeWithdraw.js"]
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  liquidity-automation:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: ["node", "worker/liquidityAutomation.js"]
+    env_file:
+      - ./api/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - ./api/uploads:/app/api/uploads
+      - ./keys:/app/keys:ro
+    networks:
+      - app-network
+
+  # ── Frontend ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # ── NGINX ────────────────────────────────────────────
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      # - "443:443"
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+      - frontend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+# ── Shared Network ─────────────────────────────────────
+networks:
+  app-network:
+    driver: bridge
+

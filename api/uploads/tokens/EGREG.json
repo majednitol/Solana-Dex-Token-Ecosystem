@@ -1,0 +1,17 @@
+{
+  "name": "wefgwe",
+  "symbol": "EGREG",
+  "description": "wefgwe (EGREG) token.",
+  "image": "/uploads/tokens/EGREG.png",
+  "external_url": "https://cryptoniteswap.com",
+  "attributes": [
+    {
+      "trait_type": "decimals",
+      "value": "5"
+    },
+    {
+      "trait_type": "transferFeeBps",
+      "value": "5"
+    }
+  ]
+}

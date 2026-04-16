@@ -1,0 +1,127 @@
+{
+  "rpc": "https://api.devnet.solana.com",
+  "results": [
+    {
+      "pair": "NTC/ASDC",
+      "canonicalPair": "NTC/ASDC",
+      "flipped": false,
+      "ok": false,
+      "error": "Transaction simulation failed: {\"InstructionError\":[\"1\",{\"Custom\":\"0\"}]}",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "49iHK22EQeizJ3MZgMnwUa7GNK37qPFsQ1kXgxoAyZre"
+    },
+    {
+      "pair": "NTC/EDC",
+      "canonicalPair": "NTC/EDC",
+      "flipped": false,
+      "ok": false,
+      "error": "Transaction simulation failed: {\"InstructionError\":[\"1\",{\"Custom\":\"0\"}]}",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "4LrE5JkqhceNtStXXptKFHU2U5DLrdeRN7hrDu9ode1N"
+    },
+    {
+      "pair": "NTC/RDC",
+      "canonicalPair": "NTC/RDC",
+      "flipped": false,
+      "ok": false,
+      "error": "Transaction simulation failed: {\"InstructionError\":[\"1\",{\"Custom\":\"0\"}]}",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "9cUnKjKjpfTfxFmvboPAn3QbwsHHTLTAnJevSCCDmLU7"
+    },
+    {
+      "pair": "NTC/YDC",
+      "canonicalPair": "NTC/YDC",
+      "flipped": false,
+      "ok": false,
+      "error": "Transaction simulation failed: {\"InstructionError\":[\"1\",{\"Custom\":\"0\"}]}",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "5LrADhNwcJNTEfcmP9XTfPXpUYLm3jqWqK2SL4VFRTNX"
+    },
+    {
+      "pair": "NTC/SDC",
+      "canonicalPair": "NTC/SDC",
+      "flipped": false,
+      "ok": true,
+      "poolAddress": "6G7ZuFjEHYLnkvZd8igRD5tVdgpB5a64oR1fioiKTiDK",
+      "txId": "3LxZKK5VkrPjfR9F4XnhdLqmpWpvk7kYGJYtLPWbV6HdFkz5CeEiTW99Gu98q2jZF5xduhaX25Uzoo3SDdUSWtgE",
+      "initializationCostLamports": "15513840",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "Ag1AgiMjP2SPT1G1SmGXYC43Ex2Fjfn9DssD4NVgK1KB"
+    },
+    {
+      "pair": "NTC/CDC",
+      "canonicalPair": "NTC/CDC",
+      "flipped": false,
+      "ok": true,
+      "poolAddress": "BLhAJCha39ZaucWhB5upY9vzkWbWfpHZEGEcw2TjFtUH",
+      "txId": "2fXkaQ7YLNjbf3DDewfedMQphvc3G2Grprz6BTu4r171mR4W68EaTf2TkzJTZ8CAaf1MFqxH9vVkwfJExjy3fFzK",
+      "initializationCostLamports": "15513840",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "CbiCfcBjXgjnRDhQBTG1zVNE3bo3sRGQcnwVfcicfrRo"
+    },
+    {
+      "pair": "NTC/ADC",
+      "canonicalPair": "NTC/ADC",
+      "flipped": false,
+      "ok": true,
+      "poolAddress": "6bgyR7HVnmgd5xkxZZcrrtZCqygUynSrd2QveQLatgSF",
+      "txId": "WNwP56KWnBgJS4naNMxMzoLhQ4uzVvXjKJh3JPDMkRTGsgC59h7kJzoHFxKFxdi9oWJ9WQ7Y45Sm3vBon39yFdZ",
+      "initializationCostLamports": "15513840",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "9SKqhgqqS7zXEp8Q2dzvfSR32agvdKKFh9ZP9iteyLvg"
+    },
+    {
+      "pair": "NTC/SGDC",
+      "canonicalPair": "NTC/SGDC",
+      "flipped": false,
+      "ok": true,
+      "poolAddress": "GohhuFSbokWcEZrTR1WuwRTWgBSLYayVDw6SkcmTKrEZ",
+      "txId": "49J4ACZb4VgV58B1i9oHyC8nzLqQBHbLtRaEvH6vBmNMXDS1DB33yCVptxpQQBYcR5rubi49ZuEBCF2k4UX1H2Qu",
+      "initializationCostLamports": "15513840",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi",
+      "mintB": "HNQgrwjVQBRvtdVpwGegih8a1mS55srK5xwiCDmQY4Nj"
+    },
+    {
+      "pair": "NTC/DMC",
+      "canonicalPair": "DMC/NTC",
+      "flipped": true,
+      "ok": true,
+      "poolAddress": "CZd5oU4SfMUKpZQLyggSh9Mz3EHRrWCoZpEeRDCj2pFB",
+      "txId": "34qd5UebHmLYyqCEA4FoaB1PWvXaXtdVHfE7YVzru2R9QppCPzLtccq2zDVY7rMNyNPrgCvPt2TsBUAiQ8XTbW9y",
+      "initializationCostLamports": "15513840",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "2rK2LBo9GwRMfQWfu3vghLrFmPd6Uaz25iQ4VkbknuDi",
+      "mintB": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi"
+    },
+    {
+      "pair": "NTC/BDC",
+      "canonicalPair": "BDC/NTC",
+      "flipped": true,
+      "ok": true,
+      "poolAddress": "7KcjbD9sA1Z4GoxPJnpbbS97GijkqMPxGBtzVKAEvztX",
+      "txId": "Mtb8qBWZuhKSky8bupnkxbnhSgr2iEgfqgd2HSxvocw2nFEhVhc13bG8Rpfhm4SWqQRydTb62Z3Xy9gTLVdKAVP",
+      "initializationCostLamports": "15513840",
+      "tickSpacing": 64,
+      "initialPrice": 1,
+      "mintA": "2bUuEakPyj5HQwT27NRk6N1ApD4fyvuQEXHnYiC2iu8j",
+      "mintB": "434erVhE9CoGkZvGbXjx9zprxEULcSRhLvN9fTAkuoQi"
+    }
+  ]
+}

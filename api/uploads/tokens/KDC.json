@@ -1,0 +1,25 @@
+{
+  "name": "Korea Digital Currency",
+  "symbol": "KDC",
+  "description": "Korea Digital Currency (KDC) token.",
+  "image": "",
+  "external_url": "https://cryptoniteswap.com",
+  "attributes": [
+    {
+      "trait_type": "fiatSymbol",
+      "value": "KRW"
+    },
+    {
+      "trait_type": "color",
+      "value": "#ef4444"
+    },
+    {
+      "trait_type": "decimals",
+      "value": "5"
+    },
+    {
+      "trait_type": "transferFeeBps",
+      "value": "5"
+    }
+  ]
+}

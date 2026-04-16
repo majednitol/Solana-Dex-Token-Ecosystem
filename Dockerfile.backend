@@ -1,0 +1,36 @@
+# Stage 1: Builder
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package descriptors 
+COPY package*.json ./
+
+# Install production dependencies only to save space
+RUN npm install --omit=dev
+
+# Stage 2: Production
+FROM node:20-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the exact needed folders and give ownership to the 'node' user
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/package*.json ./
+COPY --chown=node:node api ./api
+COPY --chown=node:node worker ./worker
+COPY --chown=node:node contract/logos ./contract/logos
+
+# Expose the API port expected by the app default
+EXPOSE 5000
+
+# Set required environment variables
+ENV NODE_ENV=production
+ENV PORT=5000
+
+# Drop privileges to the standard non-root 'node' user
+USER node
+
+# Start the API service directly instead of through an npm shell
+CMD ["node", "api/index.js"]

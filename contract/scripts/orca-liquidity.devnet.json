@@ -1,0 +1,59 @@
+{
+  "rpc": "https://api.devnet.solana.com",
+  "results": [
+    {
+      "pool": "6G7ZuFjEHYLnkvZd8igRD5tVdgpB5a64oR1fioiKTiDK",
+      "ok": true,
+      "lpTxId": "2fPweCmHVxUaWk8U9h1e6tfHdK5BjzSdbSqzs7iN4DAQa2jDvbwTh2rz956dfUyXG2fsDdeY1bc2po1qUxfdzXfF",
+      "positionMint": "B6zZ9jzAjGV5Soo3XmWtZaaNHbttG5czhw1tKHS4xQNZ",
+      "initializationCostLamports": "0",
+      "tokenMaxA": "200000000000000000",
+      "tokenMaxB": "200000000000000000"
+    },
+    {
+      "pool": "BLhAJCha39ZaucWhB5upY9vzkWbWfpHZEGEcw2TjFtUH",
+      "ok": true,
+      "lpTxId": "3JBFWjuLrK9BkRTGK7zhbvJLZEW2fEgKkxLiRuRscJAXwD1FQdgYJBttwP2VvjS2DWPXEYGQUPWu2Y8qTiZ6G8YZ",
+      "positionMint": "DT11XePy5uAP8wSpLSigYEjeE34CbQpgS7TSCd4XHQp4",
+      "initializationCostLamports": "0",
+      "tokenMaxA": "200000000000000000",
+      "tokenMaxB": "200000000000000000"
+    },
+    {
+      "pool": "6bgyR7HVnmgd5xkxZZcrrtZCqygUynSrd2QveQLatgSF",
+      "ok": true,
+      "lpTxId": "4m15RgF4S17sSH8i55dQRpJ9SciKfEK2MKY2qaxKYUQDyzTtRWWS8J75f77QzEG42sZUJtNswhXFRHccHHWhGH8z",
+      "positionMint": "9uumvhisZ3ffpekDTQaPTrgNbX1Q2GEQNvE7DEvWrVWF",
+      "initializationCostLamports": "0",
+      "tokenMaxA": "200000000000000000",
+      "tokenMaxB": "200000000000000000"
+    },
+    {
+      "pool": "GohhuFSbokWcEZrTR1WuwRTWgBSLYayVDw6SkcmTKrEZ",
+      "ok": true,
+      "lpTxId": "5ZbhXSbLsLc6q2ja384oAjLweFpuhPk6ZPoUvtVPsVZGYUJsDjq6bwkkSwDJ3gcdJ7KcLGzRK1JNh5dSN3iRfLrt",
+      "positionMint": "3buSTNjho246kUdSwWd89ebt79TEfo8cEKuXp82vQLcU",
+      "initializationCostLamports": "0",
+      "tokenMaxA": "200000000000000000",
+      "tokenMaxB": "200000000000000000"
+    },
+    {
+      "pool": "CZd5oU4SfMUKpZQLyggSh9Mz3EHRrWCoZpEeRDCj2pFB",
+      "ok": true,
+      "lpTxId": "53FZPgEw7GNnFw13FuJ9Zkr6Pw1ikKjxcZPJPsof3BdhhkB2miXvjFnFiVia1qfMHuLfWELEwrbfZth66YfQnf5",
+      "positionMint": "BuGcugaBasjMbuwP3CPePRcbhmLEYfsiWjzhBS3Vd8dK",
+      "initializationCostLamports": "0",
+      "tokenMaxA": "200000000000000000",
+      "tokenMaxB": "200000000000000000"
+    },
+    {
+      "pool": "7KcjbD9sA1Z4GoxPJnpbbS97GijkqMPxGBtzVKAEvztX",
+      "ok": true,
+      "lpTxId": "2fWRGkU5dCNRFo6cEMGJq5dVfQtE5Sn8YihvCxJvcvSGmzF6Dp7KLdoXAnJ9oYBwKLYHEkf8uxsgxVC3zk1ehngB",
+      "positionMint": "7zdMZxX1T4Yme54f59v8hvMsn79Ps3yY1SAXAsgTnntW",
+      "initializationCostLamports": "0",
+      "tokenMaxA": "200000000000000000",
+      "tokenMaxB": "200000000000000000"
+    }
+  ]
+}

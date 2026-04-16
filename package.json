@@ -1,0 +1,92 @@
+{
+  "name": "solana-swap",
+  "version": "1.3.0",
+  "description": "Solana Swap Library for Solana Tracker Swap API",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "umd:main": "dist/umd/index.js",
+  "types": "dist/types/index.d.ts",
+  "browser": "dist/umd/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs && cp package.cjs.json dist/cjs/package.json",
+    "build:esm": "tsc --module es2015 --outDir dist/esm && cp package.esm.json dist/esm/package.json",
+    "build:umd": "tsc --module umd --outDir dist/umd",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist/types",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:types",
+    "watch:build": "tsc --watch",
+    "watch:server": "nodemon './dist/cjs/index.js' --watch './dist/cjs'",
+    "start": "npm-run-all build --parallel watch:build watch:server --print-label",
+    "start:dev": "nodemon api/index.js",
+    "start:api": "node api/index.js",
+    "start:worker": "node worker/feeCollector.js",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "docker:dev": "docker compose up -d",
+    "docker:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
+    "docker:stop": "docker compose down"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YZYLAB/solana-swap.git"
+  },
+  "keywords": [
+    "solana",
+    "swap",
+    "raydium",
+    "jupiter",
+    "pumpfun",
+    "letsbonkfun"
+  ],
+  "author": "Solana Tracker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YZYLAB/solana-swap/issues"
+  },
+  "homepage": "https://github.com/YZYLAB/solana-swap#readme",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@fastify/compress": "^8.3.1",
+    "@fastify/cors": "^11.2.0",
+    "@fastify/multipart": "^9.4.0",
+    "@fastify/static": "^9.0.0",
+    "@irys/upload": "^0.0.15",
+    "@irys/upload-solana": "^0.1.8",
+    "@metaplex-foundation/js": "^0.20.1",
+    "@nowpaymentsio/nowpayments-api-js": "1.0.5",
+    "@orca-so/whirlpools": "^7.0.1",
+    "@reown/appkit": "^1.8.19",
+    "@reown/appkit-adapter-ethers": "^1.8.19",
+    "@reown/appkit-adapter-solana": "^1.8.19",
+    "@reown/appkit-adapter-wagmi": "^1.8.19",
+    "@solana/kit": "^5.5.1",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/spl-token-metadata": "^0.1.6",
+    "@solana/web3.js": "^1.91.6",
+    "@sqds/multisig": "^2.1.4",
+    "axios": "^1.6.8",
+    "bs58": "^5.0.0",
+    "cloudinary": "^2.9.0",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "fastify": "^5.8.2",
+    "ioredis": "^5.10.0",
+    "nodemon": "^3.1.11",
+    "npm-run-all": "^4.1.5",
+    "pg": "^8.19.0",
+    "postgres": "^3.4.8",
+    "promise-retry": "^2.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "viem": "^2.47.12",
+    "wagmi": "^3.6.1"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.10"
+  }
+}

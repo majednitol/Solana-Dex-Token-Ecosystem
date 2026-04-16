@@ -1,0 +1,17 @@
+{
+  "name": "Test Token Four",
+  "symbol": "TST4",
+  "description": "Test Token Four (TST4) token.",
+  "image": "",
+  "external_url": "https://cryptoniteswap.com",
+  "attributes": [
+    {
+      "trait_type": "decimals",
+      "value": "5"
+    },
+    {
+      "trait_type": "transferFeeBps",
+      "value": "5"
+    }
+  ]
+}
