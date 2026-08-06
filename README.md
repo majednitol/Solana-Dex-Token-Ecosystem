@@ -1,573 +1,177 @@
+# Solana DEX & Token Ecosystem (`solana-swap`)
 
-# Solana Swap
+An end-to-end, high-performance **Solana Decentralized Exchange (DEX), Token Launchpad, Squads v4 Governance, and Automated Liquidity System**.
 
-> The most efficient solution for integrating Solana-based token swaps into your projects.
+This repository contains the complete full-stack infrastructure including on-chain Anchor Rust smart contracts, a TypeScript Swap SDK, a Fastify microservice API with PostgreSQL and Redis, background automation workers, and a React frontend.
 
-![Solana Swap](https://img.shields.io/npm/v/solana-swap)
-![License](https://img.shields.io/npm/l/solana-swap)
-![Downloads](https://img.shields.io/npm/dm/solana-swap)
+---
 
-## Overview
+##  Architecture & Core Components
 
-Solana Swap provides a streamlined API for executing token swaps on the Solana blockchain. Built and maintained by [Solana Tracker](https://www.solanatracker.io), this library offers fast market updates and comprehensive access to multiple Solana DEXs through a unified interface.
+```
+                ┌─────────────────────────────────────────┐
+                │          Frontend (React + Vite)        │
+                └────────────────────┬────────────────────┘
+                                     │
+                                     ▼
+                ┌─────────────────────────────────────────┐
+                │     Fastify REST API (api/index.js)     │
+                ├────────────────────┬────────────────────┤
+                │ PostgreSQL (DB)    │ Redis (Cache)      │
+                └────────────────────┼────────────────────┘
+                                     │
+         ┌───────────────────────────┼───────────────────────────┐
+         ▼                           ▼                           ▼
+┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
+│  Solana Swap SDK │       │ Anchor Contract  │       │ Background Cron  │
+│    (src/index.ts)│       │ (contract/)      │       │ Workers (worker/)│
+└────────┬─────────┘       └────────┬─────────┘       └────────┬─────────┘
+         │                          │                          │
+         └──────────────────────────┼──────────────────────────┘
+                                    ▼
+                         Solana Blockchain Cluster
+```
 
-## Features
+### 1. **Core SDK (`src/`)**
+* **TypeScript SDK (`SolanaTracker`)**: Constructs versioned transactions (`v0`) using Address Lookup Tables (ALTs).
+* **Network & RPC Layer**: Configurable priority fees (`min`, `low`, `medium`, `high`, `veryHigh`, `unsafeMax`), custom RPC send endpoints, and WebSocket signature confirmation waiters ([`src/lib/sender.ts`](file:///Users/majedurrahman/solana/src/lib/sender.ts)).
+* **MEV & Bundles**: Support for Jito bundle submission ([`src/lib/jito.ts`](file:///Users/majedurrahman/solana/src/lib/jito.ts)).
 
-- **Fast Market Updates**: Fastest Solana swap api available.
-- **Multi-DEX Support**: Integrated with major Solana DEXs
-- **High Performance**: Optimized for speed and reliability, even during network congestion
-- **Developer-Friendly**: Simple interface with comprehensive documentation
-- **Jito Integration**: Support for Jito bundles for MEV protection
-- **Auto Priority Fees**: Automatic priority fee calculation
-- **Custom Fee Support**: Add your own fees on swaps
-- **Percentage-based Swaps**: Swap percentages of wallet balance
-- **Custom Send Endpoints**: Support for specialized RPC endpoints (Helius, Nextblock, etc.)
-- **WebSocket Confirmations**: Efficient transaction confirmation via WebSocket
-- **Detailed Error Handling**: Get comprehensive transaction error information
-- **HTTP/HTTPS Support**: Works with both secure and local RPC endpoints
-- **Connection Keep-Alive**: Maintains warm connections for better performance
+### 2. **Fastify Backend API (`api/`)**
+* **Server**: High-throughput REST API server ([`api/index.js`](file:///Users/majedurrahman/solana/api/index.js)) built on Fastify.
+* **Services (`api/services/`)**:
+  * `swap.service.js`: Swap quotes, routing optimization, and `minimumAmountOut` calculations.
+  * `token-creation.service.js`: SPL Token & Token-2022 mint creation, metadata pointers, and logo uploads via Irys / Arweave.
+  * `squads.service.js`: Multi-signature treasury governance, proposal creation, and execution using `@sqds/multisig` (Squads v4).
+  * `pool.service.js` & `liquidity.service.js`: Interacts with Orca Whirlpools and Raydium liquidity pools.
+  * `price.service.js` & `metrics.service.js`: DEX token price feeds and real-time system metrics.
+  * `referral-db.service.js`: Multi-tier referral tracking and automated reward disbursements.
+  * `nowpayments.service.js`: On-ramp crypto purchase processor.
+* **Database (`api/db/`)**: PostgreSQL schema ([`api/db/schema.sql`](file:///Users/majedurrahman/solana/api/db/schema.sql)) managing trade events, OHLCV candles, token registry, pools, multisig configs, referral program, and user wallets.
 
-## Supported DEXs
+### 3. **Solana Smart Contracts (`contract/`)**
+* **Anchor Program (`contract/programs/token-core-contracts`)**: On-chain Rust program (`GdWoikJDEhSmFMSPLZZAjnPFr67XtRni5KcyP3BCg5DV`) initializing and managing the `TokenRegistry` PDA (`[b"token_registry"]`).
+* **Common Crate (`contract/crates/common-contracts`)**: Shared Rust modules for checked math arithmetic, program constraints, and error handling.
+* **Security & Lints**: Enforces strict `#![deny(clippy::unwrap_used)]` and `#![deny(unsafe_code)]` directives.
 
-- Raydium
-- Raydium CPMM
-- Pump.fun
-- Pump.fun AMM
-- Raydium Launchoad
-- MoonIt
-- Letsbonk.fun
-- Jupiter Studio
-- Believe
-- Meteora Dynamic
-- Moonshot
-- Orca 
-- Jupiter (Private Self-Hosted API)
+### 4. **Background Workers (`worker/`)**
+* `priceWatcher.js`: Monitors real-time DEX transactions and updates PostgreSQL `chart_candles` (OHLCV metrics: 1m, 5m, 1h, 1d).
+* `feeCollector.js`: Tracks accumulated protocol and swap fees across mints.
+* `tokenFeeWithdraw.js`: Sweeps harvested fee tokens to the designated protocol Treasury ATA.
+* `liquidityAutomation.js`: Automated liquidity rebalancing across Orca tick ranges.
+* `tradeBotCron.js`: Executes scheduled programmatic trading routines.
 
-## Installation
+### 5. **Frontend Application (`frontend/`)**
+* **Tech Stack**: React 18, Vite, Tailwind CSS, Reown AppKit (`@reown/appkit-adapter-solana`).
+* **Features**: Swap terminal, token launchpad, DEX market charts, Squads v4 multisig dashboard, token purchase flow, and admin governance portal.
+
+---
+
+##  Repository Directory Structure
+
+```
+.
+├── api/                    # Fastify REST API backend, routes, services, and DB schema
+│   ├── controllers/        # API controllers
+│   ├── db/                 # PostgreSQL schema.sql, init.js, seed files
+│   ├── routes/             # Network posts & oracle route definitions
+│   ├── services/           # 18+ backend services (swap, trade, squads, tokens, etc.)
+│   └── index.js            # Main Fastify server entry point
+├── contract/               # Solana Anchor Rust Smart Contracts
+│   ├── crates/             # Shared Rust helper crates (common-contracts)
+│   └── programs/           # Main Anchor programs (token-core-contracts)
+├── deploy/                 # Production deployment manifests and Docker assets
+├── frontend/               # React SPA built with Vite and Reown AppKit
+├── nginx/                  # Nginx reverse proxy configuration
+├── scripts/                # Build and deployment shell scripts
+├── src/                    # Core TypeScript Solana Tracker Swap SDK
+│   ├── lib/                # Jito bundle and RPC transaction sender modules
+│   └── index.ts            # SolanaTracker main SDK class
+├── worker/                 # Asynchronous background cron workers
+│   ├── feeCollector.js     # Protocol fee collector
+│   ├── liquidityAutomation.js # Automated liquidity pool manager
+│   ├── priceWatcher.js     # OHLCV candle aggregator worker
+│   ├── tokenFeeWithdraw.js # Treasury fee sweep worker
+│   └── tradeBotCron.js     # Algorithmic trade bot worker
+├── docker-compose.yml      # Development Docker Compose file
+├── docker-compose.prod.yml # Production Docker Compose overrides
+├── Dockerfile.backend      # Backend API container definition
+└── package.json            # Main workspace dependencies and npm scripts
+```
+
+---
+
+##  Getting Started
+
+### Prerequisites
+- **Node.js**: `v18+` or `v20+`
+- **Docker & Docker Compose**: For PostgreSQL and Redis services
+- **Rust & Anchor CLI**: (Optional, for smart contract compilation)
+
+### 1. Environment Setup
+Copy the example environment configuration in `api/`:
+```bash
+cp api/.env.example api/.env
+```
+
+Key environment variables:
+- `SOLANA_RPC_URL`: Mainnet/Devnet Solana RPC endpoint
+- `DATABASE_URL`: PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/solana_dex`)
+- `REDIS_URL`: Redis connection string (`redis://localhost:6379`)
+- `ADMIN_WALLET_KEY`: Base58 private key for admin operations
+
+### 2. Run with Docker (Recommended)
+Start database, cache, backend API, and worker services:
+```bash
+# Start development stack
+npm run docker:dev
+
+# Stop stack
+npm run docker:stop
+```
+
+### 3. Local Development (Step-by-Step)
 
 ```bash
-# Using npm
-npm install solana-swap
+# Install root dependencies
+npm install
 
-# Using yarn
-yarn add solana-swap
+# Build the SDK
+npm run build
 
-# Using pnpm
-pnpm add solana-swap
+# Start the Fastify API server
+npm run start:dev
+
+# Start background price watcher / fee collector workers (separate terminal)
+npm run start:worker
+
+# Build and run the Frontend
+npm run build:frontend
 ```
 
-Or clone the repository:
+---
 
-```bash
-git clone https://github.com/YZYLAB/solana-swap.git
-```
+## ⚡ Available NPM Scripts
 
-## Quick Start
+| Command | Description |
+|---|---|
+| `npm run build` | Builds the TypeScript SDK (`dist/cjs`, `dist/esm`, `dist/umd`, `dist/types`) |
+| `npm run start:dev` | Runs Fastify API server with nodemon |
+| `npm run start:api` | Runs Fastify API server in production mode |
+| `npm run start:worker` | Launches background fee collector worker |
+| `npm run build:frontend` | Installs frontend dependencies and builds Vite web app |
+| `npm run docker:dev` | Spins up Docker Compose development container stack |
+| `npm run docker:prod` | Launches production Docker Compose stack |
+| `npm run docker:stop` | Shuts down Docker Compose containers |
 
-```javascript
-import { Keypair } from "@solana/web3.js";
-import bs58 from "bs58";
-import { SolanaTracker } from "solana-swap";
+---
 
-async function swap() {
-  // Initialize wallet
-  const keypair = Keypair.fromSecretKey(
-    bs58.decode("YOUR_SECRET_KEY_HERE")
-  );
-  
-  // Create instance with RPC endpoint
-  const solanaTracker = new SolanaTracker(
-    keypair,
-    "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY",
-    "YOUR_API_KEY", // Optional: API key for swap instructions (Only available upon request for reduced fee, not required)
-    false           // Optional: Enable debug mode
-  );
-  
-  // Get swap instructions
-  const swapResponse = await solanaTracker.getSwapInstructions(
-    "So11111111111111111111111111111111111111112", // From Token (SOL)
-    "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token
-    0.0001,                                         // Amount to swap
-    30,                                            // Slippage (% or "auto")
-    keypair.publicKey.toBase58(),                  // Payer public key
-    0.0005,                                        // Priority fee (or "auto")
-  );
-  
-  // Execute the swap
-  try {
-    const txid = await solanaTracker.performSwap(swapResponse, {
-      sendOptions: { skipPreflight: true },
-      confirmationRetries: 30,
-      confirmationRetryTimeout: 500,
-      lastValidBlockHeightBuffer: 150,
-      resendInterval: 1000,
-      confirmationCheckInterval: 1000,
-      commitment: "processed",
-      skipConfirmationCheck: false, // Set to true to return txid immediately
-      useWebSocket: true           // Use WebSocket for confirmation (more efficient)
-    });
-    
-    console.log("Transaction ID:", txid);
-    console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
-  } catch (error) {
-    console.error("Error performing swap:", error.message);
-  }
-}
+##  Security & Governance
 
-swap();
-```
+- **Squads v4 Multisig**: All administrative functions (swap limits, buy token pricing, referral reward rates, treasury sweeps) are controlled via 2-of-3 multi-signature proposals.
+- **On-Chain Rust Safety**: Smart contracts enforce strict memory safety with `#![deny(clippy::unwrap_used)]`, `#![deny(unsafe_code)]`, and checked math functions (`checked_add`/`checked_sub`).
 
-## Advanced Features
+---
 
-### Auto Amount
-
-Use `"auto"` to swap the entire balance of a token:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  "auto",  // Uses entire balance
-  slippage,
-  payerPublicKey,
-  priorityFee
-);
-```
-
-### Percentage-based Swaps
-
-Swap a percentage of your wallet balance:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  "50%",  // Swap 50% of balance
-  slippage,
-  payerPublicKey,
-  priorityFee
-);
-```
-
-### Auto Priority Fees
-
-Let the API automatically determine the optimal priority fee:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  amount,
-  slippage,
-  payerPublicKey,
-  "auto",  // Auto priority fee
-  false,   // forceLegacy
-  {
-    priorityFeeLevel: "medium"  // Options: "min", "low", "medium", "high", "veryHigh", "unsafeMax"
-  }
-);
-```
-
-### Auto Slippage
-
-Let the API automatically determine the optimal slippage:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  amount,
-  "auto",  // Auto slippage based on liquidity
-  payerPublicKey,
-  priorityFee
-);
-```
-
-### Custom Fees
-
-Add your own fees to swaps:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  amount,
-  slippage,
-  payerPublicKey,
-  priorityFee,
-  false,
-  {
-    fee: {
-      wallet: "YOUR_FEE_WALLET_ADDRESS",
-      percentage: 0.25  // 0.25% fee
-    },
-    feeType: "add"  // "add" or "deduct"
-  }
-);
-```
-
-### Custom Tips
-
-Add custom tips for services like Jito or validators:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  amount,
-  slippage,
-  payerPublicKey,
-  priorityFee,
-  false,
-  {
-    customTip: {
-      wallet: "TIP_WALLET_ADDRESS",
-      amount: 0.001  // 0.001 SOL tip
-    }
-  }
-);
-```
-
-### Transaction Versions
-
-Choose between versioned transactions (v0) or legacy transactions:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  amount,
-  slippage,
-  payerPublicKey,
-  priorityFee,
-  false,
-  {
-    txVersion: "v0"  // or "legacy"
-  }
-);
-```
-
-### Direct Routes Only
-
-Disable multi-hop swaps for direct pool routes only:
-
-```javascript
-const swapResponse = await solanaTracker.getSwapInstructions(
-  fromToken,
-  toToken,
-  amount,
-  slippage,
-  payerPublicKey,
-  priorityFee,
-  false,
-  {
-    onlyDirectRoutes: true
-  }
-);
-```
-
-### Custom Send Endpoints
-
-Use specialized RPC endpoints for sending transactions:
-
-```javascript
-// Helius example
-await solanaTracker.setCustomSendTransactionEndpoint(
-  "https://ams-sender.helius-rpc.com/fast"
-);
-
-// Nextblock example with authentication
-await solanaTracker.setCustomSendTransactionEndpoint(
-  "https://london.nextblock.io",
-  {
-    'Authorization': 'YOUR_API_KEY'
-  }
-);
-
-// Clear custom endpoint (go back to default)
-await solanaTracker.setCustomSendTransactionEndpoint(null);
-```
-
-### WebSocket Confirmations
-
-Use WebSocket for more efficient transaction confirmations:
-
-```javascript
-const txid = await solanaTracker.performSwap(swapResponse, {
-  sendOptions: { skipPreflight: true },
-  confirmationRetries: 30,
-  confirmationRetryTimeout: 500,
-  commitment: "processed",
-  useWebSocket: true  // Enable WebSocket confirmation
-});
-```
-
-### Detailed Error Information
-
-Get comprehensive error details when transactions fail:
-
-```javascript
-const result = await solanaTracker.performSwapWithDetails(swapResponse, {
-  sendOptions: { skipPreflight: true },
-  confirmationRetries: 30,
-  confirmationRetryTimeout: 500,
-  commitment: "processed",
-  useWebSocket: true
-});
-
-if (result.error) {
-  console.error("Transaction failed:", result.signature);
-  console.error("Error type:", result.error.type);
-  console.error("Error message:", result.error.message);
-  if (result.error.programId) {
-    console.error("Program that failed:", result.error.programId);
-  }
-  if (result.error.instructionIndex !== undefined) {
-    console.error("Instruction index:", result.error.instructionIndex);
-  }
-} else {
-  console.log("Transaction successful:", result.signature);
-}
-```
-
-### Jito Integration
-
-Execute transactions with Jito bundles for MEV protection:
-
-```javascript
-const txid = await solanaTracker.performSwap(swapResponse, {
-  sendOptions: { skipPreflight: true },
-  confirmationRetries: 30,
-  confirmationCheckInterval: 500,
-  commitment: "processed",
-  jito: {
-    enabled: true,
-    tip: 0.0001,
-  },
-});
-```
-
-### Debug Mode
-
-Enable debug logging for troubleshooting:
-
-```javascript
-// Enable globally
-const solanaTracker = new SolanaTracker(keypair, rpc, apiKey, true);
-
-// Or per operation
-const txid = await solanaTracker.performSwap(swapResponse, {
-  debug: true,
-  // ... other options
-});
-
-// Or toggle at runtime
-solanaTracker.setDebug(true);
-```
-
-## Full Example with All Features
-
-```javascript
-// Initialize with all options
-const solanaTracker = new SolanaTracker(
-  keypair,
-  "https://api.mainnet-beta.solana.com",
-  "YOUR_API_KEY",
-  true // debug mode
-);
-
-// Set custom send endpoint
-await solanaTracker.setCustomSendTransactionEndpoint(
-  "https://mainnet.block-engine.jito.wtf/api/v1/transactions",
-  { 'Authorization': 'Bearer YOUR_TOKEN' }
-);
-
-// Swap 50% of wallet balance with all features
-const swapResponse = await solanaTracker.getSwapInstructions(
-  "So11111111111111111111111111111111111111112",
-  "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
-  "50%",
-  "auto", // Auto slippage
-  keypair.publicKey.toBase58(),
-  "auto", // Auto priority fee
-  false,
-  {
-    priorityFeeLevel: "high",
-    fee: {
-      wallet: "YOUR_FEE_WALLET_ADDRESS",
-      percentage: 0.5
-    },
-    customTip: {
-      wallet: "TIP_WALLET_ADDRESS",
-      amount: 0.001
-    },
-    feeType: "add",
-    txVersion: "v0",
-    onlyDirectRoutes: false
-  }
-);
-
-// Execute with detailed error handling
-const result = await solanaTracker.performSwapWithDetails(swapResponse, {
-  sendOptions: { skipPreflight: true },
-  confirmationRetries: 30,
-  confirmationRetryTimeout: 500,
-  commitment: "processed",
-  useWebSocket: true
-});
-
-if (result.error) {
-  console.error("Swap failed:", result.error);
-} else {
-  console.log("Swap successful:", result.signature);
-}
-
-// Clean up
-solanaTracker.destroy();
-```
-
-## API Reference
-
-### Constructor
-
-```typescript
-new SolanaTracker(
-  keypair: Keypair,           // Wallet keypair
-  rpc: string,                // RPC endpoint (HTTP or HTTPS)
-  apiKey?: string,            // Optional API key
-  debug?: boolean             // Enable debug logging
-)
-```
-
-### getSwapInstructions
-
-```typescript
-getSwapInstructions(
-  from: string,                           // From token address
-  to: string,                             // To token address
-  fromAmount: number | string | "auto",   // Amount ("auto", "50%", or number)
-  slippage: number | "auto",              // Slippage percentage or auto
-  payer: string,                          // Payer public key
-  priorityFee?: number | "auto",          // Priority fee or auto
-  forceLegacy?: boolean,                  // Force legacy transaction
-  additionalOptions?: {                   // Additional options
-    priorityFeeLevel?: "min" | "low" | "medium" | "high" | "veryHigh" | "unsafeMax",
-    fee?: { wallet: string; percentage: number },
-    customTip?: { wallet: string; amount: number },
-    feeType?: "add" | "deduct",
-    txVersion?: "v0" | "legacy",
-    onlyDirectRoutes?: boolean
-  }
-): Promise<SwapResponse>
-```
-
-### performSwap
-
-```typescript
-performSwap(
-  swapResponse: SwapResponse,
-  options?: {
-    sendOptions?: SendOptions,
-    confirmationRetries?: number,
-    confirmationRetryTimeout?: number,
-    lastValidBlockHeightBuffer?: number,
-    resendInterval?: number,
-    confirmationCheckInterval?: number,
-    commitment?: Commitment,
-    skipConfirmationCheck?: boolean,
-    useWebSocket?: boolean,              // Use WebSocket for confirmation
-    debug?: boolean,                     // Enable debug for this operation
-    jito?: {
-      enabled: boolean,
-      tip: number
-    }
-  }
-): Promise<string>  // Returns transaction signature
-```
-
-### performSwapWithDetails
-
-```typescript
-performSwapWithDetails(
-  swapResponse: SwapResponse,
-  options?: PerformSwapOptions
-): Promise<{
-  signature: string;
-  error?: {
-    type: "InstructionError" | "InsufficientFunds" | "AccountNotFound" | "ProgramError" | "Unknown";
-    message: string;
-    instructionIndex?: number;
-    programId?: string;
-    rawError?: any;
-  }
-}>
-```
-
-### setCustomSendTransactionEndpoint
-
-```typescript
-setCustomSendTransactionEndpoint(
-  endpoint: string | null,              // Custom RPC endpoint or null to clear
-  headers?: Record<string, string>      // Optional headers for authentication
-): Promise<void>
-```
-
-### Additional Methods
-
-```typescript
-// Update RPC endpoint
-updateRpcEndpoint(rpc: string): void
-
-// Get custom send endpoint
-getCustomSendEndpoint(): string | null
-
-// Set debug mode
-setDebug(enabled: boolean): void
-
-// Clean up resources
-destroy(): void
-
-// Get transaction details
-getTransactionDetails(signature: string): Promise<ParsedTransactionWithMeta | null>
-
-// Get current rate
-getRate(
-  from: string,
-  to: string,
-  amount: number | string | "auto",
-  slippage: number | "auto"
-): Promise<RateResponse>
-```
-
-## Example Projects
-
-- [Volume Bot](https://github.com/YZYLAB/solana-volume-bot)
-- [Trading Bot](https://github.com/YZYLAB/solana-trade-bot)
-
-*Using this library in production? [Let us know](mailto:swap-api@solanatracker.io) to be featured here.*
-
-## CommonJS Usage
-
-For projects using CommonJS:
-
-```javascript
-const { SolanaTracker } = require("solana-swap");
-```
-
-## Pricing
-
-Our standard fee is 0.5% on successful transactions. For high-volume applications, we offer discounted rates (as low as 0.1%) for qualified projects.
-
-## Contact
-
-For business inquiries or volume discounts:
-- Email: [swap-api@solanatracker.io](mailto:swap-api@solanatracker.io)
-- Discord: [Join our community](https://discord.gg/JH2e9rR9fc)
-
-## Documentation
-
-For full documentation, visit our [API Docs](https://docs.solanatracker.io).
-
-## License
-
-[MIT](LICENSE)
+##  License
+ISC License.
